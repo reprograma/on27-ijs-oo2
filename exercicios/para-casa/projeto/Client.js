@@ -1,22 +1,13 @@
 const { Bank } = require('./Bank');
+const { Person } = require('./Person');
+const { Manager } = require('./Manager');
 
-class Client {
-	name;
-	#cpf;
+class Client extends Person {
 	banks = [];
-
-	constructor(name, cpf) {
-		this.name = name;
-		this.#cpf = cpf;
-	}
-
-	get cpf() {
-		return this.#cpf;
-	}
 
 	hasAccountInThisBank(bank) {
 		return (
-			this.banks.find((element) => element.bankCode === bank.bankCode) !==
+			this.banks.find((element) => element.bank.bankCode === bank.bankCode) !==
 			undefined
 		);
 	}
@@ -34,13 +25,14 @@ class Client {
 			return;
 		}
 
-		this.banks.push(bank);
+		this.banks.push({bank: bank, manager: this.#getRandomManager(bank)});
+
 		const bankIndex = Bank.createdBanks.findIndex(
 			(element) => element.bankCode === bank.bankCode
 		);
 		Bank.createdBanks[bankIndex].qtdClients++;
 
-		console.log(`Banco ${bank.bankCode} adicionado à cliente ${this.name}.`);
+		console.log(`Banco ${bank.bankCode} adicionado à cliente ${this.name}. Sua gerente é ${this.banks[this.banks.length - 1].manager.name}.`);
 	}
 
 	removeBank(bank) {
@@ -57,7 +49,7 @@ class Client {
 		}
 
 		this.banks = this.banks.filter(
-			(element) => element.bankCode !== bank.bankCode
+			(element) => element.bank.bankCode !== bank.bankCode
 		);
 		const bankIndex = Bank.createdBanks.findIndex(
 			(element) => element.bankCode === bank.bankCode
@@ -65,6 +57,12 @@ class Client {
 		Bank.createdBanks[bankIndex].qtdClients--;
 
 		console.log(`Banco ${bank.bankCode} removido da cliente ${this.name}`);
+	}
+
+	#getRandomManager(bank) {
+		const randomIndex = Math.floor(Math.random() * bank.managers.length);
+		bank.managers[randomIndex].addClient(this.name);
+		return bank.managers[randomIndex];
 	}
 }
 

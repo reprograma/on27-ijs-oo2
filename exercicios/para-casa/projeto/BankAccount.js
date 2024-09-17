@@ -16,7 +16,7 @@ class BankAccount {
 			return new Error('Informe um banco válido');
 		}
 		if (
-			client.banks.find((element) => element.bankCode === bank.bankCode) ===
+			client.banks.find((element) => element.bank.bankCode === bank.bankCode) ===
 			undefined
 		) {
 			return new Error(
@@ -101,7 +101,13 @@ class BankAccount {
 
 	// Criar método cashWithdrawal
 	cashWithdrawal(amount) {
-		// Implementar esse método
+		if (this.#balance >= amount) {
+			this.#balance -= amount;
+			console.log(`O novo saldo da conta é: R$ ${this.#balance.toFixed(2)}`);
+		} 
+		else {
+			console.log(`Saldo insuficiente para realizar o saque. Seu saldo atual é de ${this.#balance.toFixed(2)}. Para realizar esse saque você precisa ter R$ ${amount.toFixed(2)} em conta.`);
+		}
 	}
 }
 
